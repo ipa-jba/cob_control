@@ -162,7 +162,7 @@ public:
     virtual void updateWheelStates(const std::vector<WheelState> &states);
 
 private:
-    std::vector<boost::shared_ptr<WheelData> > wheels_;
+    std::vector<std::shared_ptr<WheelData> > wheels_;
 };
 
 double limitValue(double value, double limit);
@@ -172,7 +172,7 @@ public:
     // Constructor
     template<typename T2> UndercarriageCtrlBase(const std::vector<T2> &params){
         for(typename std::vector<T2>::const_iterator it = params.begin(); it != params.end(); ++it){
-            wheels_.push_back(boost::make_shared<T>(*it));
+            wheels_.push_back(std::make_shared<T>(*it));
         }
     }
 
@@ -208,7 +208,7 @@ public:
     }
 
 protected:
-    std::vector<boost::shared_ptr<T> > wheels_;
+    std::vector<std::shared_ptr<T> > wheels_;
 };
 
 struct CtrlParams{

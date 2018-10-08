@@ -89,7 +89,7 @@ double WheelData::getVelY() const {
 }
 UndercarriageGeom::UndercarriageGeom(const std::vector<WheelParams> &params){
     for(std::vector<WheelParams>::const_iterator it = params.begin(); it != params.end(); ++it){
-        wheels_.push_back(boost::make_shared<WheelData>(it->geom));
+        wheels_.push_back(std::make_shared<WheelData>(it->geom));
     }
 }
 

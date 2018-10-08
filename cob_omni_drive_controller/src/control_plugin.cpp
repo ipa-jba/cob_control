@@ -73,7 +73,7 @@ public:
             }
 
             for(size_t i=0; i< pos_ctrl_params.size(); ++i) {
-                boost::shared_ptr<dynamic_reconfigure::Server<SteerCtrlConfig> > dr(new dynamic_reconfigure::Server<SteerCtrlConfig>(mutex, ros::NodeHandle(nh, params[i].geom.steer_name)));
+                std::shared_ptr<dynamic_reconfigure::Server<SteerCtrlConfig> > dr(new dynamic_reconfigure::Server<SteerCtrlConfig>(mutex, ros::NodeHandle(nh, params[i].geom.steer_name)));
                 SteerCtrlConfig config;
                 copy(config, params[i].pos_ctrl);
                 dr->setConfigDefault(config);
@@ -118,7 +118,7 @@ public:
         boost::recursive_mutex mutex; // dynamic_reconfigure::Server calls the callback from the setCallback function
         bool updated;
         boost::scoped_ptr< dynamic_reconfigure::Server<SteerCtrlConfig> > reconfigure_server_;
-        std::vector<boost::shared_ptr< dynamic_reconfigure::Server<SteerCtrlConfig> > > reconfigure_server_axes_; // TODO: use unique_ptr
+        std::vector<std::shared_ptr< dynamic_reconfigure::Server<SteerCtrlConfig> > > reconfigure_server_axes_; // TODO: use unique_ptr
     } pos_ctrl_;
 
 };
