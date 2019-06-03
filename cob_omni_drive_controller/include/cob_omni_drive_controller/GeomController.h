@@ -15,8 +15,7 @@
  */
 
 
-#ifndef H_GEOM_CONTROLLER_IMPL
-#define H_GEOM_CONTROLLER_IMPL
+#pragma once
 
 #include <controller_interface/controller.h>
 #include <cob_omni_drive_controller/UndercarriageCtrlGeomROS.h>
@@ -83,4 +82,3 @@ public:
 
 }
 
-#endif

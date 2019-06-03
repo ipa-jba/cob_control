@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-
-#include "GeomController.h"
-#include "WheelControllerBase.h"
+#include "cob_omni_drive_controller/GeomController.h"
+#include "cob_omni_drive_controller/WheelControllerBase.h"
 
 #include <dynamic_reconfigure/server.h>
 #include <cob_omni_drive_controller/SteerCtrlConfig.h>

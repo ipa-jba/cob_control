@@ -22,11 +22,11 @@
 #include <tf/transform_broadcaster.h>
 
 #include <cob_base_controller_utils/OdometryTracker.h>
-#include <cob_omni_drive_controller/UndercarriageCtrlGeom.h>
+#include <cob_omni_drive_controller/undercarriage/geometry/geometry.h>
 
 #include <std_srvs/Trigger.h>
 
-#include "GeomController.h"
+#include "cob_omni_drive_controller/GeomController.h"
 
 namespace cob_omni_drive_controller
 {

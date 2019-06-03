@@ -14,19 +14,31 @@
  * limitations under the License.
  */
 
-
-#pragma once
-
-#include <ros/ros.h>
 #include <cob_omni_drive_controller/undercarriage/geometry/geometry.h>
-#include <cob_omni_drive_controller/undercarriage/controller/direct_controller.h>
-#include <cob_omni_drive_controller/undercarriage/controller/position_controller.h>
 
-namespace cob_omni_drive_controller{
+#include <angles/angles.h>
+#include <math.h>
+#include <boost/shared_ptr.hpp>
+#include <stdexcept>
 
-bool parseWheelParams(std::vector<UndercarriageGeom::WheelParams> &params, const ros::NodeHandle &nh, bool read_urdf = true);
-bool parseWheelParams(std::vector<UndercarriageDirectCtrl::WheelParams> &params, const ros::NodeHandle &nh, bool read_urdf = true);
-bool parseWheelParams(std::vector<UndercarriageCtrl::WheelParams> &params, const ros::NodeHandle &nh, bool read_urdf = true);
-
+namespace cob_omni_drive_controller
+{
+UndercarriageGeom::UndercarriageGeom(const std::vector<WheelParams> &params)
+{
+  for (std::vector<WheelParams>::const_iterator it = params.begin(); it != params.end(); ++it)
+  {
+    wheels_.push_back(std::make_shared<WheelData>(it->geom));
+  }
 }
 
+void UndercarriageGeom::calcDirect(PlatformState &state) const
+{
+  UndercarriageGeomBase::calcDirect(state, wheels_);
+}
+
+void UndercarriageGeom::updateWheelStates(const std::vector<WheelState> &states)
+{
+  UndercarriageGeomBase::updateWheelStates(wheels_, states);
+}
+
+}  // namespace cob_omni_drive_controller

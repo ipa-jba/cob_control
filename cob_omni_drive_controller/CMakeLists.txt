@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(cob_omni_drive_controller)
+add_compile_options(-std=c++11)
+
 
 find_package(catkin REQUIRED COMPONENTS angles cob_base_controller_utils controller_interface dynamic_reconfigure geometry_msgs hardware_interface nav_msgs realtime_tools sensor_msgs std_msgs std_srvs tf tf2 urdf)
 
@@ -19,11 +21,25 @@ catkin_package(
 ### BUILD ###
 include_directories(include src ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
-add_library(cob_omni_drive_geom src/UndercarriageCtrlGeom.cpp src/param_parser.cpp)
+add_library(cob_omni_drive_geom 
+  src/undercarriage/controller/position_controller.cpp
+  src/undercarriage/geometry/geometry.cpp
+  src/param_parser.cpp
+)
 add_dependencies(cob_omni_drive_geom ${catkin_EXPORTED_TARGETS})
 target_link_libraries(cob_omni_drive_geom ${catkin_LIBRARIES})
 
-add_library(cob_omni_drive_controller src/odom_plugin.cpp src/control_plugin.cpp src/control_multi_plugin.cpp)
+add_library(cob_omni_drive_controller 
+  src/odom_plugin.cpp 
+  src/control_plugin.cpp 
+  src/control_multi_plugin.cpp
+  src/primitives/ctrl_data.cpp
+  src/primitives/pos_ctrl_data.cpp
+  src/primitives/wheel_data.cpp
+  src/utils/math_sup.cpp
+
+
+)
 add_dependencies(cob_omni_drive_controller ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(cob_omni_drive_controller cob_omni_drive_geom ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 

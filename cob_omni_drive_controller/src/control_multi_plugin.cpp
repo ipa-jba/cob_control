@@ -1,5 +1,5 @@
-#include "GeomController.h"
-#include "WheelControllerBase.h"
+#include "cob_omni_drive_controller/GeomController.h"
+#include "cob_omni_drive_controller/WheelControllerBase.h"
 #include <controller_interface/multi_interface_controller.h>
 #include <hardware_interface/joint_command_interface.h>
 

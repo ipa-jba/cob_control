@@ -17,9 +17,11 @@
 
 #include <cob_omni_drive_controller/param_parser.h>
 #include <cob_omni_drive_controller/UndercarriageCtrlGeomROS.h>
+#include <cob_omni_drive_controller/types.h>
 #include <urdf/model.h>
 #include <angles/angles.h>
 #include <XmlRpcException.h>
+#include <XmlRpcValue.h>
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Transform.h>
@@ -80,7 +82,7 @@ template<typename T> bool read(T& val, const std::string &name, XmlRpc::XmlRpcVa
     return true;
 }
 
-bool parseCtrlParams(CtrlParams & params, XmlRpc::XmlRpcValue &wheel, urdf::Model* model){
+bool parseCtrlParams(cob_omni_drive_controller::CtrlParams & params, XmlRpc::XmlRpcValue &wheel, urdf::Model* model){
     double deg;
     read_with_default(deg, "steer_neutral_position", wheel, 0.0);
     params.dWheelNeutralPos = angles::from_degrees(deg);
@@ -119,7 +121,7 @@ bool parseCtrlParams(CtrlParams & params, XmlRpc::XmlRpcValue &wheel, urdf::Mode
     return true;
 }
 
-bool parsePosCtrlParams(PosCtrlParams & params, XmlRpc::XmlRpcValue &wheel){
+bool parsePosCtrlParams(cob_omni_drive_controller::PosCtrlParams & params, XmlRpc::XmlRpcValue &wheel){
     if(!wheel.hasMember("steer_ctrl")){
         ROS_ERROR_STREAM("steer_ctrl not found");
         return false;
@@ -133,7 +135,7 @@ bool parsePosCtrlParams(PosCtrlParams & params, XmlRpc::XmlRpcValue &wheel){
         && read(params.dDDPhiMax, "dd_phi_max", steer);
 }
 
-bool parseWheelGeom(WheelGeom & geom, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcStruct &merged, urdf::Model* model){
+bool parseWheelGeom(cob_omni_drive_controller::WheelGeom & geom, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcStruct &merged, urdf::Model* model){
 
     read_with_default(geom.steer_name, "steer", wheel, std::string());
     read_with_default(geom.drive_name, "drive", wheel, std::string());
@@ -151,6 +153,11 @@ bool parseWheelGeom(WheelGeom & geom, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcSt
                 steer_pos.y = transform.getOrigin().getY();
                 steer_pos.z = transform.getOrigin().getZ();
             }
+            geom.limits.lower = steer_joint->limits->lower;
+            geom.limits.upper = steer_joint->limits->upper;
+            geom.limits.velocity = steer_joint->limits->velocity;
+            geom.limits.effort = steer_joint->limits->effort;
+
         }
     }
 
@@ -201,15 +208,15 @@ bool parseWheelGeom(WheelGeom & geom, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcSt
 
 template<typename W> bool parseWheel(W & params, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcStruct &merged, urdf::Model* model);
 
-template<> bool parseWheel(UndercarriageGeom::WheelParams & params, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcStruct &merged, urdf::Model* model){
+template<> bool parseWheel(cob_omni_drive_controller::UndercarriageGeom::WheelParams & params, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcStruct &merged, urdf::Model* model){
     return parseWheelGeom(params.geom, wheel, merged, model);
 }
 
-template<> bool parseWheel(UndercarriageDirectCtrl::WheelParams & params, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcStruct &merged, urdf::Model* model){
+template<> bool parseWheel(cob_omni_drive_controller::UndercarriageDirectCtrl::WheelParams & params, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcStruct &merged, urdf::Model* model){
     return parseWheelGeom(params.geom, wheel, merged, model) && parseCtrlParams(params.ctrl, merged, model);
 }
 
-template<> bool parseWheel(UndercarriageCtrl::WheelParams & params, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcStruct &merged, urdf::Model* model){
+template<> bool parseWheel(cob_omni_drive_controller::UndercarriageCtrl::WheelParams & params, XmlRpc::XmlRpcValue &wheel, MergedXmlRpcStruct &merged, urdf::Model* model){
     return parseWheelGeom(params.geom, wheel, merged, model) && parseCtrlParams(params.ctrl, merged, model) && parsePosCtrlParams(params.pos_ctrl, merged);
 }
 
@@ -267,13 +274,13 @@ template<typename W> bool parseWheels(std::vector<W> &wheel_params, const ros::N
 
 namespace cob_omni_drive_controller{
 
-bool parseWheelParams(std::vector<UndercarriageGeom::WheelParams> &params, const ros::NodeHandle &nh, bool read_urdf /* = true*/){
+bool parseWheelParams(std::vector<cob_omni_drive_controller::UndercarriageGeom::WheelParams> &params, const ros::NodeHandle &nh, bool read_urdf /* = true*/){
     return parseWheels(params, nh, read_urdf);
 }
-bool parseWheelParams(std::vector<UndercarriageDirectCtrl::WheelParams> &params, const ros::NodeHandle &nh, bool read_urdf /* = true*/){
+bool parseWheelParams(std::vector<cob_omni_drive_controller::UndercarriageDirectCtrl::WheelParams> &params, const ros::NodeHandle &nh, bool read_urdf /* = true*/){
     return parseWheels(params, nh, read_urdf);
 }
-bool parseWheelParams(std::vector<UndercarriageCtrl::WheelParams> &params, const ros::NodeHandle &nh, bool read_urdf /* = true*/){
+bool parseWheelParams(std::vector<cob_omni_drive_controller::UndercarriageCtrl::WheelParams> &params, const ros::NodeHandle &nh, bool read_urdf /* = true*/){
     return parseWheels(params, nh, read_urdf);
 }
 

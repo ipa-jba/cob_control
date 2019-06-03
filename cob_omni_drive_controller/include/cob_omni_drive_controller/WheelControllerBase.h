@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-#ifndef H_WHEEL_CONTROLLER_IMPL
-#define H_WHEEL_CONTROLLER_IMPL
+#pragma once
 
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
 
 #include <pluginlib/class_list_macros.h>
 
-#include <cob_omni_drive_controller/UndercarriageCtrlGeom.h>
+#include <cob_omni_drive_controller/utils/math_sup.h>
 #include <geometry_msgs/Twist.h>
 
 #include <boost/scoped_ptr.hpp>
@@ -144,9 +141,9 @@ protected:
                 ROS_FATAL("Received NaN-value in Twist message. Reset target to zero.");
                 target_.state = PlatformState();
             }else{
-                target_.state.setVelX(limitValue(msg->linear.x, max_vel_trans_));
-                target_.state.setVelY(limitValue(msg->linear.y, max_vel_trans_));
-                target_.state.dRotRobRadS = limitValue(msg->angular.z, max_vel_rot_);
+                target_.state.setVelX(MathSup::limitValue(msg->linear.x, max_vel_trans_));
+                target_.state.setVelY(MathSup::limitValue(msg->linear.y, max_vel_trans_));
+                target_.state.dRotRobRadS = MathSup::limitValue(msg->angular.z, max_vel_rot_);
             }
             target_.updated = true;
             target_.stamp = ros::Time::now();
@@ -157,4 +154,3 @@ protected:
 };
 
 }
-#endif

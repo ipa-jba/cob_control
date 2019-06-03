@@ -15,14 +15,15 @@
  */
 
 
-#ifndef COB_OMNI_DRIVE_CONTROLLER_PARAM_PARSER_H
-#define COB_OMNI_DRIVE_CONTROLLER_PARAM_PARSER_H
+#pragma once
 
 #include <urdf/model.h>
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Transform.h>
 #include <tf2/LinearMath/Vector3.h>
+
+#include "cob_omni_drive_controller/types.h"
 
 inline bool parseWheelTransform(const std::string& joint_name, const std::string& parent_link_name,
                          tf2::Transform &transform, urdf::Model* model)
@@ -67,5 +68,3 @@ inline bool parseWheelTransform(const std::string& joint_name, const std::string
     else
         return false;
 }
-
-#endif  // COB_OMNI_DRIVE_CONTROLLER_PARAM_PARSER_H
