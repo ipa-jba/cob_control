@@ -17,6 +17,7 @@ struct CtrlData : public WheelData
   virtual void calcControlStep(WheelCommand& command, double dCmdRateS, bool reset);
 
   virtual void reset();
+  void pickConfiguration(double steer_target, double drive_target);
 
   template <typename P>
   CtrlData(const P& params) : WheelData(params.geom), params_(params.ctrl)

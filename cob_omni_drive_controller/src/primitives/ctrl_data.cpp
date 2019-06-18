@@ -5,6 +5,26 @@
 
 namespace cob_omni_drive_controller
 {
+void CtrlData::pickConfiguration(double steer_target, double drive_target)
+{
+  double st2 = steer_target + M_PI;
+  MathSup::normalizePi(st2);
+
+  if ((MathSup::getWeightedDelta(state_.dAngGearSteerRad, m_dAngGearSteerTargetRad, steer_target) <=
+       MathSup::getWeightedDelta(state_.dAngGearSteerRad, m_dAngGearSteerTargetRad, st2)) &&
+      geom_.limits.positionInLimits(steer_target))
+  {
+    // Target1 is "optimal"
+    m_dVelGearDriveTargetRadS = drive_target;
+    m_dAngGearSteerTargetRad = steer_target;
+  }
+  else
+  {
+    // Target2 is "optimal"
+    m_dVelGearDriveTargetRadS = -drive_target;
+    m_dAngGearSteerTargetRad = st2;
+  }
+}
 void CtrlData::setTarget(const PlatformState& plt_state)
 {
   // check if zero movement commanded -> keep orientation of wheels, set wheel velocity to zero
@@ -26,29 +46,12 @@ void CtrlData::setTarget(const PlatformState& plt_state)
   // calculate resulting steering angle
   // Wheel has to move in direction of resulting velocity vector of steering axis
   double dAngGearSteerTarget1Rad = MathSup::atan4quad(dtempAxVelYRobMMS, dtempAxVelXRobMMS);
-  // calculate corresponding angle in opposite direction (+180 degree)
-  double dAngGearSteerTarget2Rad = dAngGearSteerTarget1Rad + M_PI;
-  MathSup::normalizePi(dAngGearSteerTarget2Rad);
 
   // calculate absolute value of rotational rate of driving wheels in rad/s
   double dVelGearDriveTarget1RadS =
       sqrt((dtempAxVelXRobMMS * dtempAxVelXRobMMS) + (dtempAxVelYRobMMS * dtempAxVelYRobMMS)) / geom_.dRadiusWheelMM;
-  // now adapt to direction (forward/backward) of wheel
-  double dVelGearDriveTarget2RadS = -dVelGearDriveTarget1RadS;
 
-  if (MathSup::getWeightedDelta(state_.dAngGearSteerRad, m_dAngGearSteerTargetRad, dAngGearSteerTarget1Rad) <=
-      MathSup::getWeightedDelta(state_.dAngGearSteerRad, m_dAngGearSteerTargetRad, dAngGearSteerTarget2Rad))
-  {
-    // Target1 is "optimal"
-    m_dVelGearDriveTargetRadS = dVelGearDriveTarget1RadS;
-    m_dAngGearSteerTargetRad = dAngGearSteerTarget1Rad;
-  }
-  else
-  {
-    // Target2 is "optimal"
-    m_dVelGearDriveTargetRadS = dVelGearDriveTarget2RadS;
-    m_dAngGearSteerTargetRad = dAngGearSteerTarget2Rad;
-  }
+  pickConfiguration(dAngGearSteerTarget1Rad, dVelGearDriveTarget1RadS);
 }
 
 void CtrlData::calcControlStep(WheelCommand& command, double dCmdRateS, bool reset)
