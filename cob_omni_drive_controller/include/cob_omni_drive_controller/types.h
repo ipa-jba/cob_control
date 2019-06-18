@@ -56,6 +56,32 @@ struct JointLimits
   double upper;
   double velocity;
   double effort;
+  double clamp(double value, double lo, double hi)
+  {
+    return value < lo ? lo : value > hi ? hi : value;
+  }
+
+  bool positionInLimits(double position)
+  {
+    return (lower <= position && position <= upper);
+  }
+  bool velocityInLimits(double target_velocity)
+  {
+    return std::abs(velocity) < velocity;
+  }
+  double limitVelocity(double target_velocity)
+  {
+    return clamp(target_velocity, -velocity, velocity);
+  }
+
+  bool effortInLimits(double target_effort)
+  {
+    return abs(effort) < effort;
+  }
+  double limitEffort(double target_effort)
+  {
+    return clamp(target_effort, -effort, effort);
+  }
 };
 
 struct WheelGeom
