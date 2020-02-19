@@ -96,6 +96,7 @@ protected:
     nav_msgs::Odometry odom_msg;
     odom_msg.header.frame_id = static_frame_;
     odom_msg.child_frame_id = odom_frame_;
+    odom_msg.header.stamp = ros::Time::now();
 
     odom_msg.twist.twist.linear.x = twist.x();
     odom_msg.twist.twist.linear.y = twist.y();
